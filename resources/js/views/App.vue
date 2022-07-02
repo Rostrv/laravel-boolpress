@@ -1,188 +1,59 @@
 <template>
   <div>
-    <BannerComponent></BannerComponent>
-    <div class="container-fluid">
-      <div class="row">
-        <main class="col-12 col-md-9 col-lg-10 ">
-          <section class="posts py-5">
-            <div class="container">
-              <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
-                <div
-                  class="col mb-3"
-                  v-for="post in postsResponse.data"
-                  :key="post.id"
-                >
-                  <div class="product card">
-                    <img
-                      :src="'storage/' + post.cover_image"
-                      :alt="post.title"
-                    />
-                    <div class="card-body">
-                      <h3>{{ post.title }}</h3>
-                      <p>{{post.content}}</p>
-                    </div>
-                    <div class="card-footer">
-                      <div class="col">
-                        <div class="author">
-                          <h4>Author:</h4>
-                          <p>L'autore al momento non c'è</p>
-                        </div>
-                      </div>
-                      <span v-if="post.category">
-                        <strong>Category:</strong>
-                        {{ post.category.name }}
-                        <div class="tags" v-if="post.tags.length > 0">
-                          <strong>Tags:</strong>
-                          <ul>
-                            <li v-for="tag in post.tags" :key="tag.id">
-                              {{ tag.name }}
-                            </li>
-                          </ul>
-                        </div>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+    <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+        <div class="container">
+            <router-link class="navbar-brand" :to="{name: 'home'}">
+                Boolpress
+            </router-link>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-              <div class="text-center py-4">
-                <nav aria-label="Page navigation">
-                  <ul class="pagination justify-content-center">
-                    <li class="page-item" v-if="postsResponse.current_page > 1">
-                      <a
-                        class="page-link"
-                        href="#"
-                        aria-label="Previous"
-                        @click.prevent="
-                          getAllPosts(postsResponse.current_page - 1)
-                        "
-                      >
-                        <span aria-hidden="true">&laquo;</span>
-                        <span class="">Previous</span>
-                      </a>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <!-- Left Side Of Navbar -->
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item" v-for="item in menu_items">
+                        <router-link class="nav-link" :to="{name:item.route_name}">{{item.route_text}}</router-link>
                     </li>
+                    
+                    
+                </ul>
 
-                    <li
-                      :class="{
-                        'page-item': true,
-                        active: page == postsResponse.current_page,
-                      }"
-                      v-for="page in postsResponse.last_page"
-                      :key="page.id"
-                    >
-                      <a
-                        class="page-link"
-                        href="#"
-                        @click.prevent="getPosts(page)"
-                        >{{ page }}</a
-                      >
-                    </li>
-
-                    <li
-                      class="page-item"
-                      v-if="
-                        postsResponse.current_page < postsResponse.last_page
-                      "
-                    >
-                      <a
-                        class="page-link"
-                        href="#"
-                        aria-label="Next"
-                        @click.prevent="
-                          getAllPosts(postsResponse.current_page + 1)
-                        "
-                      >
-                        <span class="">Next</span>
-                        <span aria-hidden="true">&raquo;</span>
-                      </a>
-                    </li>
-                  </ul>
-                </nav>
-              </div>
+                <!-- Right Side Of Navbar -->
+                <ul class="navbar-nav ms-auto">
+                    <!-- Authentication Links -->
+                    
+                </ul>
             </div>
-          </section>
-        </main>
+        </div>
+    </nav>
 
-        <aside class="p-5 col-12 col-md-3 col-lg-2">
-          <div class="widget pt-5">
-            <h4>Categories</h4>
-            <ul>
-              <li v-for="category in categories" :key="category.id">
-                {{ category.name }}
-              </li>
-            </ul>
-          </div>
-          <div class="widget pt-5">
-            <h4>Tags</h4>
-            <ul>
-              <li v-for="tag in tags" :key="tag.id">
-                {{ tag.name }}
-              </li>
-            </ul>
-          </div>
-        </aside>
-      </div>
-    </div>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-import BannerComponent from "../components/BannerComponent";
-
 export default {
   name: "App",
-  components: { BannerComponent },
-  data() {
+  data(){
     return {
-      categories: "",
-      tags:"",
-      postsResponse: "",
-    };
-  },
-  methods: {
-    getAllPosts(postPage) {
-      axios
-        .get("/api/posts", {
-          params: {
-            page: postPage,
-          },
-        })
-        .then((response) => {
-          console.log(response);
-          this.postsResponse = response.data;
-        })
-        .catch((e) => {
-          console.error(e);
-        });
-    },
-    getAllCategories() {
-      axios
-        .get("/api/categories")
-        .then((response) => {
-          console.log(response);
-          this.categories = response.data;
-        })
-        .catch((e) => {
-          console.error(e);
-        });
-    },
-    getAllTags(){
-      axios
-        .get("/api/tags")
-        .then((response) => {
-          console.log(response);
-          this.tags = response.data;
-        })
-        .catch((e) => {
-          console.error(e);
-        });
-    },
-    
-  },
-  mounted() {
-    this.getAllPosts(1);
-    this.getAllCategories();
-    this.getAllTags();
-  },
+      menu_items : [
+        {
+          route_name: 'home',
+          route_text: 'Home'
+        },
+        {
+          route_name: 'about',
+          route_text: 'About'
+        },
+        {
+          route_name: 'posts',
+          route_text: 'Posts'
+        },
+       
+      ]
+    }
+  }
+  
 };
 </script>
